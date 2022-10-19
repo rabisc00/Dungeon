@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Dungeon
 {
-    public class HealthPotion : Consumable
+    internal class DamagePotion : Consumable
     {
         // Constructors
-        public HealthPotion(int quantity)
+        public DamagePotion(int quantity)
         {
-            ItemName = "Health Potion";
+            ItemName = "Damage Potion";
             Quantity = quantity;
         }
 
@@ -20,10 +20,9 @@ namespace Dungeon
         {
             if (ItemOwner != null)
             {
-                ItemOwner.Health += 25;
-                Quantity -= 1;
+                ItemOwner.ChargePower = 1;
 
-                Console.WriteLine("Your health has been restored by 25");
+                Console.WriteLine("Your next attack is powered!");
                 Console.WriteLine();
             }
         }

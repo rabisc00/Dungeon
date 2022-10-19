@@ -8,25 +8,40 @@ namespace Dungeon
 {
     public class Character
     {
-        protected double _chargePower = 0;
+        // Fields
+        public double _chargePower = 0;
+        public int _additionalDamage = 0;
 
+        // Properties
         public string Name { get; set; }
         public int Health { get; set; }
         public int Damage { get; set; }
         public double Shield { get; private set; } = 0;
+        public double ChargePower
+        {
+            get => _chargePower;
+            set
+            {
+                if (value > 1) _chargePower = 1;
+                else if (value < 0) _chargePower = 0;
+                else _chargePower = value;
+            }
+        }
         public bool IsAlive { get; set; } = true;
-        public int NextAttack { get; private set; }
+        public int NextAttack => (int)(Damage * (1 + ChargePower) + _additionalDamage);
         public List<Consumable> Inventory { get; private set; } = new();
 
+        // Constructors
         public Character(string name, int health, int damage)
         {
             Name = name;
             Health = health;
             Damage = damage;
-            NextAttack = Damage;
-            CollectItem(new List<Consumable>() { new HealthPotion(3) });
+            CollectItem(new List<Consumable>() { new HealthPotion(3), new DamagePotion(2) });
+            CollectItem(new List<Consumable>() { new HealthPotion(3), new DamagePotion(2) });
         }
 
+        // Methods
         public void DisplayInfo(Enemy enemy)
         {
             Console.WriteLine($"{Name}: {Health} Health | {Damage} Attack");
@@ -37,7 +52,7 @@ namespace Dungeon
         public void HitEnemy(Character whoToHit)
         {
             whoToHit.Health -= NextAttack - (int)(whoToHit.Shield * NextAttack);
-            _chargePower = 0;
+            ChargePower = 0;
         }
         public void GetHit(Enemy enemy)
         {
@@ -47,9 +62,7 @@ namespace Dungeon
         public void Prepare()
         {
             Shield = 0.20;
-            _chargePower = 0.10;
-
-            NextAttack = (int)(Damage * (1 + _chargePower));
+            ChargePower = 0.10;
         }
         public void ShowInventory()
         {
@@ -74,10 +87,19 @@ namespace Dungeon
         }
         public void CollectItem(List<Consumable> items)
         {
-            foreach (Consumable item in items)
+            foreach (Consumable iNew in items)
             {
-                item.ItemOwner = this;
-                Inventory.Add(item);
+                int matchIndex = Inventory.FindIndex(i => i.GetType() == iNew.GetType());
+
+                if (matchIndex != -1) 
+                {
+                    Inventory[matchIndex].Quantity += iNew.Quantity;
+                }
+                else
+                {
+                    iNew.ItemOwner = this;
+                    Inventory.Add(iNew);
+                }
             }
         }
     }

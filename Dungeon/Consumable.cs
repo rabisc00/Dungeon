@@ -9,10 +9,12 @@ namespace Dungeon
 {
     public abstract class Consumable
     {
+        // Properties
         public string ItemName { get; set; }
-        public int Quantity { get; set; } = 0;
+        public int Quantity { get; set; }
         public Character? ItemOwner { get; set; } = null;
 
+        // Methods
         public abstract void Consume();
     }
 }

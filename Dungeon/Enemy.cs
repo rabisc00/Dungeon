@@ -8,6 +8,7 @@ namespace Dungeon
 {
     public class Enemy : Character
     {
+        // Constructors
         public Enemy(string name, int health, int damage) : base(name, health, damage) {}
     }
 }
