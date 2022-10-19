@@ -18,7 +18,7 @@ namespace Dungeon
         // Methods
         public override void Consume()
         {
-            if (ItemOwner != null)
+            if (Quantity > 0)
             {
                 ItemOwner.Health += 25;
                 Quantity -= 1;

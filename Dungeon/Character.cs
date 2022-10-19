@@ -37,8 +37,6 @@ namespace Dungeon
             Name = name;
             Health = health;
             Damage = damage;
-            CollectItem(new List<Consumable>() { new HealthPotion(3), new DamagePotion(2) });
-            CollectItem(new List<Consumable>() { new HealthPotion(3), new DamagePotion(2) });
         }
 
         // Methods
@@ -64,16 +62,23 @@ namespace Dungeon
             Shield = 0.20;
             ChargePower = 0.10;
         }
-        public void ShowInventory()
+        public bool ShowInventory()
         {
-            foreach (Consumable item in Inventory)
+            if (Inventory.Any())
             {
-                if (item.Quantity > 1)
+                foreach (Consumable item in Inventory)
                 {
                     Console.WriteLine(item.ItemName + " (x" + item.Quantity + ")");
-                }     
+                }
+
+                Console.WriteLine();
+                return true;
             }
-            Console.WriteLine();
+            else
+            {
+                Console.WriteLine("Inventory is empty\n");
+                return false;
+            }       
         }
         public void ConsumeItem(string itemName)
         {
@@ -82,25 +87,42 @@ namespace Dungeon
                 if (item.ItemName.ToLower() == itemName)
                 {
                     item.Consume();
+                    if (item.Quantity <= 0)
+                    {
+                        Inventory.Remove(item);
+                    }
+
+                    return;
                 }
             }
         }
         public void CollectItem(List<Consumable> items)
         {
-            foreach (Consumable iNew in items)
+            if (items.Any())
             {
-                int matchIndex = Inventory.FindIndex(i => i.GetType() == iNew.GetType());
+                foreach (Consumable iNew in items)
+                {
+                    int matchIndex = Inventory.FindIndex(i => i.GetType() == iNew.GetType());
 
-                if (matchIndex != -1) 
-                {
-                    Inventory[matchIndex].Quantity += iNew.Quantity;
-                }
-                else
-                {
-                    iNew.ItemOwner = this;
-                    Inventory.Add(iNew);
+                    if (matchIndex != -1)
+                    {
+                        Inventory[matchIndex].Quantity += iNew.Quantity;
+                    }
+                    else
+                    {
+                        iNew.ItemOwner = this;
+                        Inventory.Add(iNew);
+                    }
+
+                    Console.WriteLine($"{iNew.ItemName} (x{iNew.Quantity}) added to your inventory.");
                 }
             }
+            else
+            {
+                Console.WriteLine("The enemy didn't drop any items. Better luck next time!");
+            }
+            
+            Console.WriteLine();
         }
     }
 }

@@ -22,7 +22,6 @@ while (protagonist.IsAlive)
             protagonist.Prepare();
             break;
         case "inventory":
-            protagonist.ShowInventory();
             ChooseItem(protagonist);
             continue;
         default:
@@ -34,6 +33,8 @@ while (protagonist.IsAlive)
     {
         Console.Clear();
         Console.WriteLine("You killed the enemy!");
+
+        protagonist.CollectItem(currentEnemy.DropLoot());
         currentEnemy = SpawnEnemy();
     }
     else
@@ -54,16 +55,21 @@ static Enemy SpawnEnemy()
 static bool IsDead(Character character) => character.Health < 0;
 static void ChooseItem(Character protagonist)
 {
-    List<string> availableOptions = new();
-    protagonist.Inventory.ForEach(i => availableOptions.Add(i.ItemName.ToLower()));
-
-    string chosenItem;
-    do
+    
+    if (protagonist.ShowInventory())
     {
-        Console.Write("Choose an item (or exit): ");
-        chosenItem = Console.ReadLine().ToLower();
+        List<string> availableOptions = new();
+        protagonist.Inventory.ForEach(i => availableOptions.Add(i.ItemName.ToLower()));
 
-    } while (chosenItem != "exit" && !availableOptions.Contains(chosenItem));
+        string chosenItem;
+        do
+        {
+            Console.Write("Choose an item (or exit): ");
+            chosenItem = Console.ReadLine().ToLower();
 
-    protagonist.ConsumeItem(chosenItem);
+        } while (chosenItem != "exit" && !availableOptions.Contains(chosenItem));
+
+        protagonist.ConsumeItem(chosenItem);
+    }
+    else { return; }
 }
