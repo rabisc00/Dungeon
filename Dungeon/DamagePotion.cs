@@ -21,6 +21,7 @@ namespace Dungeon
             if (ItemOwner != null)
             {
                 ItemOwner.ChargePower = 1;
+                ItemOwner._additionalDamage += 10;
 
                 Console.WriteLine("Your next attack is powered!");
                 Console.WriteLine();

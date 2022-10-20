@@ -1,11 +1,11 @@
 ﻿using Dungeon;
 
-Character protagonist = new("Viktor", 50, 22);
+Protagonist player1 = new("Viktor", 50, 22);
 Enemy currentEnemy = SpawnEnemy();
 
 string? decision;
 
-while (protagonist.IsAlive)
+while (player1.IsAlive)
 {
     Console.Write("Your action: ");
     decision = Console.ReadLine();
@@ -13,16 +13,16 @@ while (protagonist.IsAlive)
     switch (decision)
     {
         case "info":
-            protagonist.DisplayInfo(currentEnemy);
+            player1.DisplayInfo();
             continue;
         case "attack":
-            protagonist.HitEnemy(currentEnemy);
+            currentEnemy.GetHit(player1);
             break;
         case "prepare":
-            protagonist.Prepare();
+            player1.Prepare();
             break;
         case "inventory":
-            ChooseItem(protagonist);
+            ChooseItem(player1);
             continue;
         default:
             Console.WriteLine("Not a valid action\n");
@@ -34,26 +34,28 @@ while (protagonist.IsAlive)
         Console.Clear();
         Console.WriteLine("You killed the enemy!");
 
-        protagonist.CollectItem(currentEnemy.DropLoot());
+        player1.CollectItem(currentEnemy.DropLoot());
         currentEnemy = SpawnEnemy();
     }
     else
     {
-        protagonist.GetHit(currentEnemy);
+        player1.GetHit(currentEnemy);
 
-        protagonist.IsAlive = !IsDead(protagonist);
-        if (protagonist.IsAlive == false) { Console.WriteLine("ur dead"); }
+        player1.IsAlive = !IsDead(player1);
+        if (player1.IsAlive == false) { Console.WriteLine("You died. Game over."); }
     }
 }
 
 
 static Enemy SpawnEnemy()
 {
-    Random rnd = new();
-    return new Enemy("Skeleton", rnd.Next(1, 51), rnd.Next(1, 51));
+    return new Skeleton();
 }
-static bool IsDead(Character character) => character.Health < 0;
-static void ChooseItem(Character protagonist)
+static bool IsDead(Character character)
+{
+    return character.Health < 0;
+}
+static void ChooseItem(Protagonist protagonist)
 {
     
     if (protagonist.ShowInventory())

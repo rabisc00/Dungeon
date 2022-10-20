@@ -6,34 +6,10 @@ using System.Threading.Tasks;
 
 namespace Dungeon
 {
-    public class Enemy : Character, ILootable
+    public abstract class Enemy : Character, ILootable
     {
         // Properties
-        public List<Loot> LootItems { get; } = new()
-        {
-            new Loot(new List<Consumable>
-            {
-                new HealthPotion(1),
-            }, 40),
-            new Loot(new(), 37),
-            new Loot(new List<Consumable>
-            {
-                new HealthPotion(2),
-            }, 15),
-            new Loot(new List<Consumable>
-            {
-                new HealthPotion(1),
-                new DamagePotion(1),
-            }, 6),
-            new Loot(new List<Consumable>
-            {
-                new HealthPotion(1),
-                new DamagePotion(2),
-            }, 2),
-        };
-
-        // Constructors
-        public Enemy(string name, int health, int damage) : base(name, health, damage) {}
+        public List<Loot> LootItems { get; } = new();
 
         // Methods
         public List<Consumable> DropLoot()
@@ -46,13 +22,18 @@ namespace Dungeon
 
             Random rnd = new();
             int randomNumber = rnd.Next(0, totalWeight);
+            Console.WriteLine(randomNumber);
 
             // Checking where the random value falls
             int processedWeight = 0;
             foreach (Loot l in LootItems)
             {
                 processedWeight += l.Weight;
-                if (processedWeight > randomNumber) output = l.Consumables;
+                if (processedWeight > randomNumber) 
+                {
+                    output = l.Consumables;
+                    break;
+                }
             }
 
             return output;

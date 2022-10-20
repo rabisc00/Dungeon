@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Dungeon
 {
-    public class Character
+    public abstract class Character
     {
         // Fields
         public double _chargePower = 0;
@@ -16,6 +16,7 @@ namespace Dungeon
         public string Name { get; set; }
         public int Health { get; set; }
         public int Damage { get; set; }
+        public bool IsAlive { get; set; } = true;
         public double Shield { get; private set; } = 0;
         public double ChargePower
         {
@@ -27,58 +28,22 @@ namespace Dungeon
                 else _chargePower = value;
             }
         }
-        public bool IsAlive { get; set; } = true;
         public int NextAttack => (int)(Damage * (1 + ChargePower) + _additionalDamage);
         public List<Consumable> Inventory { get; private set; } = new();
 
-        // Constructors
-        public Character(string name, int health, int damage)
-        {
-            Name = name;
-            Health = health;
-            Damage = damage;
-        }
-
         // Methods
-        public void DisplayInfo(Enemy enemy)
+        public void GetHit(Character character)
         {
-            Console.WriteLine($"{Name}: {Health} Health | {Damage} Attack");
-            Console.WriteLine("Your next attack will deal {0} damage.", NextAttack);
-            Console.WriteLine("You'll take {0} damage next turn.", enemy.NextAttack - (int)(Shield * NextAttack));
-            Console.WriteLine();
-        }
-        public void HitEnemy(Character whoToHit)
-        {
-            whoToHit.Health -= NextAttack - (int)(whoToHit.Shield * NextAttack);
-            ChargePower = 0;
-        }
-        public void GetHit(Enemy enemy)
-        {
-            Health -= enemy.NextAttack - (int)(enemy.NextAttack * Shield);
+            Health -= character.NextAttack - (int)(character.NextAttack * Shield);
             Shield = 0;
+
+            character._chargePower = 0;
+            character._additionalDamage = 0;
         }
         public void Prepare()
         {
             Shield = 0.20;
             ChargePower = 0.10;
-        }
-        public bool ShowInventory()
-        {
-            if (Inventory.Any())
-            {
-                foreach (Consumable item in Inventory)
-                {
-                    Console.WriteLine(item.ItemName + " (x" + item.Quantity + ")");
-                }
-
-                Console.WriteLine();
-                return true;
-            }
-            else
-            {
-                Console.WriteLine("Inventory is empty\n");
-                return false;
-            }       
         }
         public void ConsumeItem(string itemName)
         {
@@ -95,34 +60,6 @@ namespace Dungeon
                     return;
                 }
             }
-        }
-        public void CollectItem(List<Consumable> items)
-        {
-            if (items.Any())
-            {
-                foreach (Consumable iNew in items)
-                {
-                    int matchIndex = Inventory.FindIndex(i => i.GetType() == iNew.GetType());
-
-                    if (matchIndex != -1)
-                    {
-                        Inventory[matchIndex].Quantity += iNew.Quantity;
-                    }
-                    else
-                    {
-                        iNew.ItemOwner = this;
-                        Inventory.Add(iNew);
-                    }
-
-                    Console.WriteLine($"{iNew.ItemName} (x{iNew.Quantity}) added to your inventory.");
-                }
-            }
-            else
-            {
-                Console.WriteLine("The enemy didn't drop any items. Better luck next time!");
-            }
-            
-            Console.WriteLine();
         }
     }
 }
